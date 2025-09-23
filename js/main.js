@@ -1,14 +1,14 @@
-const countSpan=document.querySelector(".count span")
-const bulletsSpan=document.querySelector(".bullets .spans")
-const quizArea=document.querySelector(".quiz-area")
-const header=document.querySelector(".header")
-const answerArea=document.querySelector(".answers-area")
-const submitBtn=document.querySelector(".submit-button")
-const scoreSpan =document.querySelector(".score span")
+const countSpan = document.querySelector(".count span")
+const bulletsSpan = document.querySelector(".bullets .spans")
+const quizArea = document.querySelector(".quiz-area")
+const header = document.querySelector(".header")
+const answerArea = document.querySelector(".answers-area")
+const submitBtn = document.querySelector(".submit-button")
+const scoreSpan = document.querySelector(".score span")
 
 
 
-const   Question=[
+const Question = [
   {
     "title": "Why We Use &lt;br&gt; Element",
     "answer_1": "To Make Text Bold",
@@ -84,89 +84,112 @@ const   Question=[
 ]
 
 
-let questionNumber=0;
-let score =0;
+let questionNumber = 0;
+let score = 0;
 
 
 
 
-function createSpan(){
-  countSpan.innerHTML=Question.length
-  for(let i=0;i<Question.length;i++){
+function createSpan() {
+  countSpan.innerHTML = Question.length
+  for (let i = 0; i < Question.length; i++) {
     const span = document.createElement("span");
     bulletsSpan.append(span);
   }
 }
 
 createSpan()
-
-
-
-function showData(){
-    header.innerHTML=""
-    answerArea.innerHTML=""
-    const qestionHeader=document.createElement("h2");
-    qestionHeader.innerHTML=Question[questionNumber].title
-    header.appendChild(qestionHeader)
-    for(i=1;i<=4;i++){
-    const input=document.createElement("input");
-    input.type="radio";
-    input.id=`answer_${i}`
-    input.name="question"
-    const label=document.createElement("label")
-    label.htmlFor=`answer_${i}`
-    label.innerHTML=Question[questionNumber][`answer_${i}`]
-  const answer=document.createElement("div")
-  answer.classList.add("answer")
-  input.dataset.answerQuestion=Question[questionNumber][`answer_${i}`]
-  answer.appendChild(input)
-  answer.appendChild(label)
-  answerArea.appendChild(answer)
-    }
-
-    
+function showData() {
+  header.innerHTML = "";
+  answerArea.innerHTML = "";
+  const qestionHeader = document.createElement("h2");
+  qestionHeader.innerHTML = Question[questionNumber].title;
+  header.appendChild(qestionHeader);
+  for (i = 1; i <= 4; i++) {
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.id = `answer_${i}`;
+    input.name = "question";
+    const label = document.createElement("label");
+    label.htmlFor = `answer_${i}`;
+    label.innerHTML = Question[questionNumber][`answer_${i}`];
+    const answer = document.createElement("div");
+    answer.classList.add("answer");
+    input.dataset.answerQuestion = Question[questionNumber][`answer_${i}`];
+    answer.appendChild(input);
+    answer.appendChild(label);
+    answerArea.appendChild(answer);
+  }
 
 }
 
 showData()
 
-submitBtn.addEventListener("click",function(){
-        const rightAnswer=Question[questionNumber].right_answer;
-      checkAnswer(rightAnswer)
-    console.log(rightAnswer)
-    setTimeout(() => {
-              questionNumber++;
-    if(questionNumber<Question.length){
- showData()
+submitBtn.addEventListener("click", function () {
+  const rightAnswer = Question[questionNumber].right_answer;
+  checkAnswer(rightAnswer)
+  console.log(rightAnswer)
+  setTimeout(() => {
+    questionNumber++;
+    if (questionNumber < Question.length) {
+      showData()
     }
-    else{
-            quizArea.innerHTML = `<h2>Quiz Finished</h2>`;
+    else {
+      quizArea.innerHTML = `<h2>Quiz Finished</h2>`;
     }
-    }, 1500); 
+  }, 1500);
 })
 
-function checkAnswer(rAnswer){
-const AnswerInput=document.getElementsByName("question");
-let currentAnswer;
-let answerContainer;
-for(let i=0;i<AnswerInput.length;i++){
-if(AnswerInput[i].checked){
-   currentAnswer=AnswerInput[i].dataset.answerQuestion;
-    answerContainer=AnswerInput[i].closest(".answer");
-   break;
- 
+function checkAnswer(rAnswer) {
+  const AnswerInput = document.getElementsByName("question");
+  let currentAnswer;
+  let answerContainer;
+  let selectedInput;
+  let selectedLabel;
+
+  for (let i = 0; i < AnswerInput.length; i++) {
+    if (AnswerInput[i].checked) {
+      currentAnswer = AnswerInput[i].dataset.answerQuestion;
+      answerContainer = AnswerInput[i].closest(".answer");
+      selectedInput=AnswerInput[i];
+      selectedLabel=document.querySelector(`label[for=${selectedInput.id}]`)
+      break;
+
+    }
+
+  }
+
+
+  if (currentAnswer === rAnswer) {
+    score++;
+    scoreSpan.innerHTML = score;
+    selectedInput.style.accentColor="green"
+    selectedLabel.style.color="green"
+  
+  }
+
+  else{
+    selectedInput.style.accentColor="red"
+    selectedLabel.style.color="red"
+    
+    
+  }
+
+
+      let rightInput;
+  let rightLabel;
+  for(let i = 0; i < AnswerInput.length; i++){
+if(AnswerInput[i].dataset.answerQuestion==rAnswer){
+  rightInput=AnswerInput[i]
+  rightLabel=document.querySelector(`label[for=${rightInput.id}]`)
+}
+  }
+
+
+  if(rightInput && rightLabel){
+    rightInput.style.accentColor = "green";
+      rightLabel.style.color = "green";
+  }
 }
 
-}
- if(currentAnswer === rAnswer){
-score++;
-scoreSpan.innerHTML=score;
-  answerContainer.style.backgroundColor="#0075ff";
-  answerContainer.style.color="white";
-   }
-   else{
-      answerContainer.style.backgroundColor="red";
-       answerContainer.style.color="white";
-   }
-}
 
