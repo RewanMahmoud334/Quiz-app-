@@ -89,12 +89,17 @@ let score = 0;
 
 
 
-
+// handleBullets()
 function createSpan() {
   countSpan.innerHTML = Question.length
   for (let i = 0; i < Question.length; i++) {
     const span = document.createElement("span");
     bulletsSpan.append(span);
+
+
+    if(i==0){[
+      span.classList.add("on")
+    ]}
   }
 }
 
@@ -119,6 +124,7 @@ function showData() {
     answer.appendChild(input);
     answer.appendChild(label);
     answerArea.appendChild(answer);
+
   }
 
 }
@@ -128,6 +134,9 @@ showData()
 submitBtn.addEventListener("click", function () {
   const rightAnswer = Question[questionNumber].right_answer;
   checkAnswer(rightAnswer)
+  handleBullets()
+  countDown()
+  
   console.log(rightAnswer)
   setTimeout(() => {
     questionNumber++;
@@ -135,9 +144,11 @@ submitBtn.addEventListener("click", function () {
       showData()
     }
     else {
-      quizArea.innerHTML = `<h2>Quiz Finished</h2>`;
+      quizArea.innerHTML = `<h2>Quiz Finished</h2>
+      <h3>Score:${score}</h3>
+      `;
     }
-  }, 1500);
+  }, 1000);
 })
 
 function checkAnswer(rAnswer) {
@@ -146,7 +157,30 @@ function checkAnswer(rAnswer) {
   let answerContainer;
   let selectedInput;
   let selectedLabel;
+      let rightInput;
+  let rightLabel;
+  for(let i = 0; i < AnswerInput.length; i++){
+if(AnswerInput[i].dataset.answerQuestion==rAnswer){
+  rightInput=AnswerInput[i]
+  rightLabel=document.querySelector(`label[for=${rightInput.id}]`)
+}
+  }
 
+
+  if(rightInput && rightLabel){
+    rightInput.style.accentColor = "green";
+      rightLabel.style.color = "green";
+  }
+
+  if(!selectedInput){
+
+      if (rightInput && rightLabel) {
+      rightInput.style.accentColor = "green";
+      rightLabel.style.color = "green";
+    }
+    return;
+
+  }
   for (let i = 0; i < AnswerInput.length; i++) {
     if (AnswerInput[i].checked) {
       currentAnswer = AnswerInput[i].dataset.answerQuestion;
@@ -172,24 +206,45 @@ function checkAnswer(rAnswer) {
     selectedInput.style.accentColor="red"
     selectedLabel.style.color="red"
     
-    
   }
 
 
-      let rightInput;
-  let rightLabel;
-  for(let i = 0; i < AnswerInput.length; i++){
-if(AnswerInput[i].dataset.answerQuestion==rAnswer){
-  rightInput=AnswerInput[i]
-  rightLabel=document.querySelector(`label[for=${rightInput.id}]`)
-}
-  }
-
-
-  if(rightInput && rightLabel){
-    rightInput.style.accentColor = "green";
-      rightLabel.style.color = "green";
-  }
 }
 
 
+function handleBullets(){
+const spans=document.querySelectorAll(".spans span");
+const arrayOfSpan=Array.from(spans);
+arrayOfSpan.forEach((span,index)=>{
+  if(questionNumber==index){
+      span.classList.add("on")
+  }
+})
+}
+
+
+
+const Timer=document.querySelector(".timer");
+let time;
+let questionTime=15;
+
+function countDown(){
+  let timeLeft=questionTime;
+  Timer.innerHTML=timeLeft;
+
+  time=setInterval(() => {
+      timeLeft--;
+      Timer.innerHTML=timeLeft;
+
+      if(timeLeft<=5){
+        Timer.style.color="red";
+      }
+
+      if(timeLeft<=0){
+clearInterval(time)
+checkAnswer()
+submitBtn.click();
+      }
+  }, 1000);
+}
+countDown()
